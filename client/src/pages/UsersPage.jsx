@@ -134,16 +134,16 @@ export function UsersPage() {
                 </td>
                 <td>{u.isActive ? 'Activo' : 'Inactivo'}</td>
                 {isAdmin && (
-                  <td className="actions">
+                  <td>
                     {!isMe && (
-                      <>
+                      <div className="actions">
                         <button type="button" className="secondary" onClick={() => toggleActive(u)}>
                           {u.isActive ? 'Desactivar' : 'Activar'}
                         </button>
                         <button type="button" className="danger" onClick={() => remove(u)}>
                           Eliminar
                         </button>
-                      </>
+                      </div>
                     )}
                   </td>
                 )}
