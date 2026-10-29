@@ -12,9 +12,20 @@ function parseId(raw) {
   return id;
 }
 
-function usersRouter({ userRepo, tokenService }) {
+// protectedEmails: cuentas que nadie puede modificar (las de la demo pública).
+function usersRouter({ userRepo, tokenService, protectedEmails = [] }) {
   const router = express.Router();
   router.use(authenticate(tokenService));
+
+  async function ensureEditable(id) {
+    const target = await userRepo.findById(id);
+    if (!target) throw notFound('Usuario no encontrado');
+    if (protectedEmails.includes(target.email)) {
+      throw conflict(
+        'Las cuentas de demostración no se pueden modificar. Crea un usuario nuevo para probar.',
+      );
+    }
+  }
 
   // Perfil propio: cualquier usuario autenticado.
   router.get('/me', async (req, res) => {
@@ -53,6 +64,7 @@ function usersRouter({ userRepo, tokenService }) {
     if (id === req.user.id && (req.body.role || req.body.isActive === false)) {
       throw badRequest('No puedes cambiar tu propio rol ni desactivar tu cuenta');
     }
+    await ensureEditable(id);
     const user = await userRepo.update(id, req.body);
     if (!user) throw notFound('Usuario no encontrado');
     if (req.body.role || req.body.isActive === false) {
@@ -65,6 +77,7 @@ function usersRouter({ userRepo, tokenService }) {
   router.delete('/:id', requireRole('admin'), async (req, res) => {
     const id = parseId(req.params.id);
     if (id === req.user.id) throw badRequest('No puedes eliminar tu propia cuenta');
+    await ensureEditable(id);
     const deleted = await userRepo.remove(id);
     if (!deleted) throw notFound('Usuario no encontrado');
     res.status(204).end();

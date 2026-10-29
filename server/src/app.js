@@ -4,11 +4,13 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { authRouter } = require('./routes/auth');
 const { usersRouter } = require('./routes/users');
+const { demoRouter } = require('./routes/demo');
+const { DEMO_EMAILS } = require('./db/seed');
 const { errorHandler } = require('./middleware/errorHandler');
 const { notFound } = require('./errors');
 
 // Las dependencias se inyectan para poder testear la app sin base de datos.
-function createApp({ userRepo, tokenService, config }) {
+function createApp({ userRepo, tokenService, config, resetDemo }) {
   const app = express();
 
   app.use(helmet());
@@ -18,7 +20,11 @@ function createApp({ userRepo, tokenService, config }) {
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/auth', authRouter({ userRepo, tokenService, config }));
-  app.use('/api/users', usersRouter({ userRepo, tokenService }));
+  app.use(
+    '/api/users',
+    usersRouter({ userRepo, tokenService, protectedEmails: config.demoMode ? DEMO_EMAILS : [] }),
+  );
+  app.use('/api/demo', demoRouter({ config, resetDemo }));
 
   app.use((_req, _res, next) => next(notFound('Ruta no encontrada')));
   app.use(errorHandler);

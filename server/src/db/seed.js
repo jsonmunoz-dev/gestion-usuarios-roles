@@ -33,4 +33,4 @@ if (require.main === module) {
     });
 }
 
-module.exports = { seed, DEMO_PASSWORD };
+module.exports = { seed, DEMO_PASSWORD, DEMO_EMAILS: demoUsers.map((u) => u.email) };

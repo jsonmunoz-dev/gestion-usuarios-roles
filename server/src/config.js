@@ -13,6 +13,9 @@ function loadConfig(env = process.env) {
     databaseUrl: env.DATABASE_URL,
     clientOrigin: env.CLIENT_ORIGIN || 'http://localhost:5173',
     isProduction: env.NODE_ENV === 'production',
+    // Modo demo: protege las cuentas de ejemplo y habilita el reinicio diario de datos.
+    demoMode: env.DEMO_MODE === 'true',
+    cronSecret: env.CRON_SECRET,
     jwt: {
       accessSecret: env.JWT_ACCESS_SECRET,
       refreshSecret: env.JWT_REFRESH_SECRET,
