@@ -6,6 +6,19 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)
 [![Licencia: MIT](https://img.shields.io/badge/Licencia-MIT-yellow.svg)](LICENSE)
 
+### 🔗 [Ver demo en vivo](https://gestion-usuarios-roles.vercel.app)
+
+Entra con un clic como **Administrador**, **Editor** o **Lector** y compara qué puede hacer cada rol. Los datos son ficticios y no hace falta instalar nada. La primera carga puede tardar unos segundos porque la base de datos gratuita se suspende cuando no se usa.
+
+![Panel de usuarios como administrador](docs/usuarios-admin.png)
+
+<details>
+<summary>Ver pantalla de login con acceso rápido</summary>
+
+![Login con cuentas de demostración](docs/login.png)
+
+</details>
+
 Sistema web full stack con **autenticación JWT** y **control de acceso basado en roles (RBAC)**.
 Tiene tres roles (`admin`, `editor` y `viewer`) y cada uno ve y puede hacer cosas distintas, tanto en la API como en la interfaz.
 
@@ -64,6 +77,13 @@ La app de Express recibe sus dependencias (`createApp({ userRepo, tokenService, 
 │   └── tests/              # Jest + Supertest (unitarios e integración)
 └── docker-compose.yml
 ```
+
+## Demo pública
+
+La demo corre en **Vercel** (cliente y API en el mismo dominio, configurado en [`vercel.json`](vercel.json)) con **PostgreSQL en Neon**. Con `DEMO_MODE=true`:
+
+- Las 3 cuentas de ejemplo no se pueden modificar ni eliminar, así ningún visitante rompe la demo para el siguiente. Los usuarios que crees tú sí.
+- Un **Vercel Cron** llama una vez al día a `GET /api/demo/reset` (protegido con `CRON_SECRET`) y deja los datos como al inicio.
 
 ## Cómo ejecutarlo
 
