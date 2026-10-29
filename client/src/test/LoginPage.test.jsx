@@ -37,3 +37,15 @@ describe('LoginPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas');
   });
 });
+
+describe('LoginPage: acceso rápido de la demo', () => {
+  it('inicia sesión con un clic usando la cuenta del rol elegido', async () => {
+    const login = vi.fn().mockResolvedValue({ id: 2, role: 'editor' });
+    renderWithAuth(routes(), { route: '/login', login });
+
+    await userEvent.click(screen.getByRole('button', { name: /Entrar como Editor/ }));
+
+    expect(login).toHaveBeenCalledWith('editor@demo.cl', 'Demo1234!');
+    expect(await screen.findByText('Inicio')).toBeInTheDocument();
+  });
+});

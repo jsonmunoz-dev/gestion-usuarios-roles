@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
+// Cuentas de la demo pública (se reinician cada día).
+const DEMO_PASSWORD = 'Demo1234!';
+const DEMO_ACCOUNTS = [
+  { email: 'admin@demo.cl', label: 'Administrador', description: 'Crea, edita y elimina usuarios' },
+  { email: 'editor@demo.cl', label: 'Editor', description: 'Ve el listado de usuarios' },
+  { email: 'viewer@demo.cl', label: 'Lector', description: 'Solo ve su propio perfil' },
+];
+
 export function LoginPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
@@ -14,12 +22,11 @@ export function LoginPage() {
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  async function onSubmit(e) {
-    e.preventDefault();
+  async function signIn(email, password) {
     setError('');
     setSubmitting(true);
     try {
-      await login(form.email, form.password);
+      await login(email, password);
       navigate(location.state?.from?.pathname || '/', { replace: true });
     } catch (err) {
       setError(err.message);
@@ -27,6 +34,11 @@ export function LoginPage() {
       setSubmitting(false);
     }
   }
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    signIn(form.email, form.password);
+  };
 
   return (
     <div className="login">
@@ -54,8 +66,27 @@ export function LoginPage() {
         <button type="submit" disabled={submitting}>
           {submitting ? 'Ingresando…' : 'Ingresar'}
         </button>
-        <p className="hint">Demo: admin@demo.cl / Demo1234!</p>
       </form>
+
+      <section className="card demo" aria-labelledby="demo-title">
+        <h2 id="demo-title">¿Solo quieres probarlo?</h2>
+        <p className="hint">
+          Entra con un clic usando una cuenta de ejemplo. Cada rol ve y puede hacer cosas distintas.
+        </p>
+        {DEMO_ACCOUNTS.map((account) => (
+          <button
+            key={account.email}
+            type="button"
+            className="demo-account"
+            disabled={submitting}
+            onClick={() => signIn(account.email, DEMO_PASSWORD)}
+          >
+            <strong>Entrar como {account.label}</strong>
+            <span>{account.description}</span>
+          </button>
+        ))}
+        <p className="hint">Los datos de la demo se reinician automáticamente cada día.</p>
+      </section>
     </div>
   );
 }

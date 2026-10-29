@@ -70,10 +70,41 @@ select {
   min-height: 100vh;
 }
 
-.login form {
+.login {
+  align-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.login form,
+.login .demo {
   display: grid;
   gap: 0.9rem;
-  width: min(360px, 100% - 2rem);
+  width: min(380px, 100%);
+}
+
+.demo h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+button.demo-account {
+  display: grid;
+  gap: 0.15rem;
+  text-align: left;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.7rem 0.9rem;
+}
+
+button.demo-account:hover {
+  border-color: var(--primary);
+}
+
+button.demo-account span {
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .login label {
