@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 
 // Cuentas de la demo pública (se reinician cada día).
@@ -12,13 +12,14 @@ const DEMO_ACCOUNTS = [
 
 export function LoginPage() {
   const { user, login } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  if (user) return <Navigate to="/" replace />;
+  // Al iniciar sesión, este componente se vuelve a renderizar con user y redirige
+  // a la página que se intentó abrir (o al inicio).
+  if (user) return <Navigate to={location.state?.from?.pathname || '/'} replace />;
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -27,7 +28,6 @@ export function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate(location.state?.from?.pathname || '/', { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -46,13 +46,21 @@ export function LoginPage() {
         <h1>Iniciar sesión</h1>
         <label>
           Email
-          <input name="email" type="email" value={form.email} onChange={onChange} required />
+          <input
+            name="email"
+            type="email"
+            autoComplete="username"
+            value={form.email}
+            onChange={onChange}
+            required
+          />
         </label>
         <label>
           Contraseña
           <input
             name="password"
             type="password"
+            autoComplete="current-password"
             value={form.password}
             onChange={onChange}
             required
