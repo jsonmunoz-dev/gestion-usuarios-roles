@@ -3,6 +3,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const { authRouter } = require('./routes/auth');
+const { usersRouter } = require('./routes/users');
 const { errorHandler } = require('./middleware/errorHandler');
 const { notFound } = require('./errors');
 
@@ -17,6 +18,7 @@ function createApp({ userRepo, tokenService, config }) {
 
   app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
   app.use('/api/auth', authRouter({ userRepo, tokenService, config }));
+  app.use('/api/users', usersRouter({ userRepo, tokenService }));
 
   app.use((_req, _res, next) => next(notFound('Ruta no encontrada')));
   app.use(errorHandler);
